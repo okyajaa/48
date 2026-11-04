@@ -55,13 +55,13 @@ input,select,textarea{width:100%;padding:12px 13px;color:var(--text);background:
    <button class="btn" type="submit">Buat akun</button>
   </form>
  </div>
- <p class="muted small">Akun baru otomatis menjadi penonton. Hak Owner hanya diberikan melalui pengaturan aman di Supabase.</p>
+ <p class="muted small">.</p>
  <div id="authMessage" class="notice hidden" role="status"></div>
 </section>
 
 <section id="ownerPanel" class="panel hidden">
  <h2>Panel Owner · Kelola Channel</h2>
- <p class="muted small">Tambahkan URL channel atau handle YouTube. Sinkronisasi berjalan di server melalui Edge Function terjadwal, jadi Owner tidak perlu membuka halaman ini.</p>
+ <p class="muted small">.</p>
  <form id="channelForm" class="form-row">
   <input id="channelInput" type="text" placeholder="https://www.youtube.com/@nama_channel atau UC..." required>
   <input id="channelLabel" type="text" maxlength="80" placeholder="Nama member / label channel (opsional)">
@@ -111,8 +111,8 @@ input,select,textarea{width:100%;padding:12px 13px;color:var(--text);background:
 <script>
 /* Isi dengan Project URL dan anon/publishable key Supabase.
    Jangan pernah memasukkan service_role key ke file frontend. */
-const SUPABASE_URL = "https://PROJECT_ID.supabase.co";
-const SUPABASE_ANON_KEY = "ISI_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://cofxnllkqkcovoijilby.supabase.co/rest/v1/-PA_TwErTpaB";
+const SUPABASE_ANON_KEY = "sb_publishable_XyMlx4oiEr2j7E9QrjX-PA_TwErTpaB";
 const SYNC_FUNCTION_URL = SUPABASE_URL + "/functions/v1/sync-jkt48-replays";
 
 let db=null, session=null, profile=null, replays=[], channels=[], selectedReplay=null;
