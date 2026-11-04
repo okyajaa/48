@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100d18">
+<title>JKT48 Replay Live</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0911;--panel:#171321;--panel2:#211a2d;--line:#382c46;--text:#f8f5fc;--muted:#aaa0b5;--accent:#a66bf0;--accent2:#7540bd;--danger:#d65b70}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{width:min(1180px,calc(100% - 28px));margin:22px auto 50px}
+.hero{padding:clamp(22px,5vw,42px);border:1px solid var(--line);border-radius:22px;background:radial-gradient(circle at 90% 10%,#7440a944,transparent 34%),linear-gradient(135deg,#21152f,#12101a 68%)}
+.eyebrow{color:#c59af7;font-size:11px;font-weight:800;letter-spacing:2px}.hero h1{font-size:clamp(27px,5vw,42px);margin:10px 0 8px}.hero p{margin:0;color:var(--muted);line-height:1.6}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--text);background:var(--panel2)}.btn.primary{background:var(--accent2);border-color:var(--accent2)}.btn.danger{background:#51202b;border-color:#773342}.btn:disabled{opacity:.55;cursor:not-allowed}
+input,select,textarea{width:100%;padding:12px 13px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:10px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--accent)}textarea{min-height:80px;resize:vertical}
+.panel{padding:17px;border:1px solid var(--line);border-radius:16px;background:var(--panel);margin:16px 0}.panel h2,.panel h3{margin:0 0 13px}.muted{color:var(--muted)}.small{font-size:12px}.hidden{display:none!important}
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-row{display:grid;gap:9px}.toolbar{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:10px;margin:20px 0 12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{overflow:hidden;border:1px solid var(--line);border-radius:15px;background:var(--panel);cursor:pointer;transition:.18s}.card:hover{transform:translateY(-3px);border-color:var(--accent)}.thumb{position:relative;aspect-ratio:16/9;background:#292132}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.play{position:absolute;inset:0;display:grid;place-items:center;background:#0005;font-size:38px}.card-body{padding:13px}.card-body h3{font-size:14px;line-height:1.45;margin:0 0 8px;overflow-wrap:anywhere}.member{color:#d6bafa;font-size:12px;margin:0 0 6px}.date{font-size:12px;color:var(--muted);margin:0}
+.state{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px;line-height:1.6}.state.error{color:#ffb8b8;border-color:#784444}
+.player{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel);margin:20px 0}.player-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.player-head h2{font-size:17px;margin:0}.frame{position:relative;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden}.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.watch-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.comment-list{display:grid;gap:10px;margin-top:12px}.comment{padding:11px;background:#211a2d;border-radius:10px}.comment strong{font-size:13px}.comment p{margin:5px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.channel-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.channel-row:last-child{border:0}.status{font-size:11px;color:#9fe2b0}.notice{padding:11px 13px;border-radius:10px;background:#211a2d;color:#d8c9e8;font-size:13px;line-height:1.5;margin:10px 0}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.wrap{width:calc(100% - 20px);margin-top:10px}.toolbar,.auth-grid{grid-template-columns:1fr}.grid{gap:10px}.card-body{padding:10px}.card-body h3{font-size:12px}.topbar{align-items:flex-start;flex-direction:column}.player{padding:11px}}@media(max-width:350px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+ <div class="eyebrow">JKT48 VIDEO ARCHIVE · 2026</div>
+ <h1>Replay Live Member</h1>
+ <p>Saksikan kembali replay live member JKT48, berikan like, dan tulis komentar setelah login.</p>
+</header>
+
+<div class="topbar">
+ <div id="accountLabel" class="muted small">Belum login · Mode penonton</div>
+ <div class="actions">
+  <button class="btn" id="openAuth">Login / Daftar</button>
+  <button class="btn hidden" id="logoutButton">Logout</button>
+  <button class="btn primary hidden" id="ownerToggle">Panel Owner</button>
+ </div>
+</div>
+
+<section id="authPanel" class="panel hidden">
+ <h2>Login / Daftar Akun</h2>
+ <div class="auth-grid">
+  <form id="loginForm" class="form-row">
+   <h3>Login</h3>
+   <input id="loginEmail" type="email" placeholder="Email" autocomplete="email" required>
+   <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" required>
+   <button class="btn primary" type="submit">Login</button>
+  </form>
+  <form id="registerForm" class="form-row">
+   <h3>Daftar penonton</h3>
+   <input id="registerName" type="text" maxlength="40" placeholder="Nama tampilan" required>
+   <input id="registerEmail" type="email" placeholder="Email" autocomplete="email" required>
+   <input id="registerPassword" type="password" minlength="6" placeholder="Password (min. 6 karakter)" required>
+   <button class="btn" type="submit">Buat akun</button>
+  </form>
+ </div>
+ <p class="muted small">Akun baru otomatis menjadi penonton. Hak Owner hanya diberikan melalui pengaturan aman di Supabase.</p>
+ <div id="authMessage" class="notice hidden" role="status"></div>
+</section>
+
+<section id="ownerPanel" class="panel hidden">
+ <h2>Panel Owner · Kelola Channel</h2>
+ <p class="muted small">Tambahkan URL channel atau handle YouTube. Sinkronisasi berjalan di server melalui Edge Function terjadwal, jadi Owner tidak perlu membuka halaman ini.</p>
+ <form id="channelForm" class="form-row">
+  <input id="channelInput" type="text" placeholder="https://www.youtube.com/@nama_channel atau UC..." required>
+  <input id="channelLabel" type="text" maxlength="80" placeholder="Nama member / label channel (opsional)">
+  <button class="btn primary" type="submit">+ Tambahkan Channel</button>
+ </form>
+ <div id="ownerMessage" class="notice hidden" role="status"></div>
+ <h3 style="margin-top:20px">Channel terdaftar</h3>
+ <div id="channelList" class="muted small">Memuat channel...</div>
+ <div class="notice">Jadwal otomatis dan API YouTube dikonfigurasi di Supabase. Tombol di sini hanya mengelola daftar channel dan meminta sinkronisasi manual jika fungsi sudah dipasang.</div>
+ <button class="btn" id="syncNow" type="button">Sinkronkan sekarang</button>
+</section>
+
+<section>
+ <div class="toolbar">
+  <input id="searchInput" type="search" placeholder="Cari judul replay atau member..." autocomplete="off">
+  <select id="generationFilter" aria-label="Filter channel"><option value="all">Semua channel</option></select>
+ </div>
+ <div class="topbar"><span id="resultCount" class="muted small">Memuat replay...</span><button class="btn" id="refreshButton" type="button">↻ Muat ulang</button></div>
+ <div id="replayGrid" class="grid" aria-live="polite"></div>
+ <div id="emptyState" class="state hidden">Belum ada replay yang cocok.</div>
+ <div id="errorState" class="state error hidden"></div>
+</section>
+
+<section id="playerSection" class="player hidden">
+ <div class="player-head"><h2 id="playerTitle">Replay Live</h2><button class="btn" id="closePlayer" type="button">Tutup ✕</button></div>
+ <div class="watch-actions">
+  <button class="btn primary" id="watchWebsite" type="button">▶ Tonton di Website</button>
+  <a class="btn" id="watchYoutube" href="#" target="_blank" rel="noopener noreferrer">Buka di YouTube ↗</a>
+  <button class="btn" id="likeButton" type="button">♡ Like <span id="likeCount">0</span></button>
+ </div>
+ <div id="websitePlayer" class="frame"><iframe id="youtubePlayer" title="JKT48 Replay Live" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+ <div id="loginCommentHint" class="notice hidden">Login terlebih dahulu untuk memberikan like dan komentar.</div>
+ <div id="commentArea" class="panel">
+  <h3>Komentar</h3>
+  <form id="commentForm" class="form-row">
+   <textarea id="commentText" maxlength="1000" placeholder="Tulis komentar..." required></textarea>
+   <button class="btn primary" type="submit">Kirim komentar</button>
+  </form>
+  <div id="commentList" class="comment-list"><span class="muted small">Pilih replay untuk melihat komentar.</span></div>
+ </div>
+</section>
+
+<p class="muted small">Pemutaran di website mengikuti izin embedding video dari YouTube. Video privat, dihapus, atau yang melarang embedding mungkin hanya dapat dibuka di YouTube.</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* Isi dengan Project URL dan anon/publishable key Supabase.
+   Jangan pernah memasukkan service_role key ke file frontend. */
+const SUPABASE_URL = "https://PROJECT_ID.supabase.co";
+const SUPABASE_ANON_KEY = "ISI_SUPABASE_ANON_KEY";
+const SYNC_FUNCTION_URL = SUPABASE_URL + "/functions/v1/sync-jkt48-replays";
+
+let db=null, session=null, profile=null, replays=[], channels=[], selectedReplay=null;
+const $ = id => document.getElementById(id);
+const setMessage=(id,msg)=>{ $(id).textContent=msg; $(id).classList.remove("hidden"); };
+const clearMessage=id=>{ $(id).textContent=""; $(id).classList.add("hidden"); };
+const escapeText=value=>String(value??"");
+function dateText(value){if(!value)return "Tanggal tidak tersedia";const d=new Date(value);return Number.isNaN(d.getTime())?"Tanggal tidak tersedia":new Intl.DateTimeFormat("id-ID",{dateStyle:"medium"}).format(d)}
+function validConfig(){return window.supabase && !SUPABASE_URL.includes("PROJECT_ID") && !SUPABASE_ANON_KEY.includes("ISI_SUPABASE")}
+function isOwner(){return profile?.role==="owner"}
+function updateAccountUI(){
+ const logged=!!session;
+ $("accountLabel").textContent=logged ? `${profile?.display_name||session.user.email} · ${isOwner()?"Owner":"Penonton"}` : "Belum login · Mode penonton";
+ $("openAuth").classList.toggle("hidden",logged);
+ $("logoutButton").classList.toggle("hidden",!logged);
+ $("ownerToggle").classList.toggle("hidden",!isOwner());
+ if(!isOwner()) $("ownerPanel").classList.add("hidden");
+}
+async function loadProfile(){
+ profile=null;
+ if(session){
+  const {data,error}=await db.from("profiles").select("id,display_name,role").eq("id",session.user.id).maybeSingle();
+  if(error) console.warn("Profile:",error.message);
+  profile=data||{id:session.user.id,display_name:session.user.email,role:"viewer"};
+ }
+ updateAccountUI();
+}
+async function loadReplays(){
+ $("errorState").classList.add("hidden");
+ $("resultCount").textContent="Memuat replay...";
+ const {data,error}=await db.from("jkt48_replays")
+  .select("id,channel_id,youtube_video_id,title,member_name,thumbnail_url,published_at,channels(channel_label,channel_title)")
+  .order("published_at",{ascending:false,nullsFirst:false});
+ if(error){$("errorState").textContent="Gagal memuat replay: "+error.message;$("errorState").classList.remove("hidden");$("resultCount").textContent="Gagal memuat";return}
+ replays=data||[];buildChannelFilter();renderReplays();
+}
+function buildChannelFilter(){
+ const previous=$("generationFilter").value;
+ $("generationFilter").replaceChildren();
+ const all=document.createElement("option");all.value="all";all.textContent="Semua channel";$("generationFilter").append(all);
+ const names=[...new Set(replays.map(v=>v.member_name||v.channels?.channel_label||v.channels?.channel_title).filter(Boolean))].sort();
+ names.forEach(name=>{const o=document.createElement("option");o.value=name;o.textContent=name;$("generationFilter").append(o)});
+ $("generationFilter").value=names.includes(previous)?previous:"all";
+}
+function renderReplays(){
+ const q=$("searchInput").value.trim().toLocaleLowerCase("id"), filter=$("generationFilter").value;
+ const rows=replays.filter(v=>{
+  const member=v.member_name||v.channels?.channel_label||v.channels?.channel_title||"Channel";
+  return `${v.title||""} ${member}`.toLocaleLowerCase("id").includes(q)&&(filter==="all"||member===filter);
+ });
+ $("replayGrid").replaceChildren();
+ rows.forEach(v=>{
+  const card=document.createElement("article");card.className="card";card.tabIndex=0;
+  const thumb=document.createElement("div");thumb.className="thumb";
+  const img=document.createElement("img");img.loading="lazy";img.alt=v.title||"Replay JKT48";
+  img.src=v.thumbnail_url||`https://img.youtube.com/vi/${encodeURIComponent(v.youtube_video_id)}/hqdefault.jpg`;
+  const play=document.createElement("div");play.className="play";play.textContent="▶";thumb.append(img,play);
+  const body=document.createElement("div");body.className="card-body";
+  const title=document.createElement("h3");title.textContent=v.title||"Replay Live";
+  const member=document.createElement("p");member.className="member";member.textContent="Member: "+(v.member_name||v.channels?.channel_label||v.channels?.channel_title||"JKT48");
+  const date=document.createElement("p");date.className="date";date.textContent=dateText(v.published_at);
+  body.append(title,member,date);card.append(thumb,body);
+  card.addEventListener("click",()=>openReplay(v));card.addEventListener("keydown",e=>{if(e.key==="Enter")openReplay(v)});
+  $("replayGrid").append(card);
+ });
+ $("resultCount").textContent=`${rows.length} replay ditemukan`;
+ $("emptyState").classList.toggle("hidden",rows.length!==0);
+}
+async function openReplay(video){
+ selectedReplay=video;
+ const id=String(video.youtube_video_id||"");
+ $("playerTitle").textContent=video.title||"JKT48 Replay Live";
+ $("watchYoutube").href="https://www.youtube.com/watch?v="+encodeURIComponent(id);
+ $("youtubePlayer").src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id);
+ $("playerSection").classList.remove("hidden");
+ $("playerSection").scrollIntoView({behavior:"smooth",block:"start"});
+ $("loginCommentHint").classList.toggle("hidden",!!session);
+ $("commentForm").classList.toggle("hidden",!session);
+ await loadLikes();
+ await loadComments();
+}
+async function loadLikes(){
+ if(!selectedReplay)return;
+ const {count,error}=await db.from("replay_likes").select("*",{count:"exact",head:true}).eq("replay_id",selectedReplay.id);
+ $("likeCount").textContent=error?"—":String(count||0);
+ if(session){
+  const {data}=await db.from("replay_likes").select("id").eq("replay_id",selectedReplay.id).eq("user_id",session.user.id).maybeSingle();
+  $("likeButton").textContent=(data?"♥ Unlike ":"♡ Like ")+$("likeCount").textContent;
+ }else $("likeButton").textContent="♡ Like "+$("likeCount").textContent;
+}
+async function loadComments(){
+ if(!selectedReplay)return;
+ $("commentList").replaceChildren();
+ const {data,error}=await db.from("replay_comments")
+  .select("id,body,created_at,profiles(display_name)")
+  .eq("replay_id",selectedReplay.id).order("created_at",{ascending:false}).limit(100);
+ if(error){const p=document.createElement("p");p.className="muted small";p.textContent="Komentar belum dapat dimuat: "+error.message;$("commentList").append(p);return}
+ if(!data?.length){const p=document.createElement("p");p.className="muted small";p.textContent="Belum ada komentar.";$("commentList").append(p);return}
+ data.forEach(c=>{
+  const box=document.createElement("div");box.className="comment";
+  const name=document.createElement("strong");name.textContent=c.profiles?.display_name||"Penonton";
+  const body=document.createElement("p");body.textContent=c.body;
+  const date=document.createElement("span");date.className="muted small";date.textContent=dateText(c.created_at);
+  box.append(name,date,body);$("commentList").append(box);
+ });
+}
+async function loadOwnerChannels(){
+ if(!isOwner())return;
+ const {data,error}=await db.from("replay_channels").select("*").order("created_at",{ascending:false});
+ if(error){$("channelList").textContent="Gagal memuat channel: "+error.message;return}
+ channels=data||[];$("channelList").replaceChildren();
+ if(!channels.length){$("channelList").textContent="Belum ada channel terdaftar.";return}
+ channels.forEach(ch=>{
+  const row=document.createElement("div");row.className="channel-row";
+  const info=document.createElement("div");
+  const title=document.createElement("strong");title.textContent=ch.channel_label||ch.channel_title||ch.channel_input;
+  const sub=document.createElement("div");sub.className="muted small";sub.textContent=ch.channel_input+" · "+(ch.is_active?"Aktif":"Nonaktif");
+  info.append(title,sub);
+  const controls=document.createElement("div");controls.className="actions";
+  const toggle=document.createElement("button");toggle.className="btn";toggle.textContent=ch.is_active?"Nonaktifkan":"Aktifkan";
+  toggle.onclick=()=>changeChannel(ch.id,{is_active:!ch.is_active});
+  const del=document.createElement("button");del.className="btn danger";del.textContent="Hapus";del.onclick=()=>deleteChannel(ch.id);
+  controls.append(toggle,del);row.append(info,controls);$("channelList").append(row);
+ });
+}
+async function changeChannel(id,patch){
+ const {error}=await db.from("replay_channels").update(patch).eq("id",id);
+ if(error)setMessage("ownerMessage",error.message);else{clearMessage("ownerMessage");await loadOwnerChannels()}
+}
+async function deleteChannel(id){
+ if(!confirm("Hapus channel ini? Data replay yang sudah tersimpan tidak ikut dihapus."))return;
+ const {error}=await db.from("replay_channels").delete().eq("id",id);
+ if(error)setMessage("ownerMessage",error.message);else{setMessage("ownerMessage","Channel berhasil dihapus.");await loadOwnerChannels()}
+}
+function extractChannelInput(raw){
+ const value=raw.trim();
+ if(/^UC[a-zA-Z0-9_-]{20,}$/.test(value))return value;
+ if(!/^https?:\/\//i.test(value)&&/^@[a-zA-Z0-9._-]+$/.test(value))return value;
+ try{
+  const u=new URL(value);
+  if(!/(^|\.)youtube\.com$/i.test(u.hostname))return null;
+  const parts=u.pathname.split("/").filter(Boolean);
+  if(parts[0]?.startsWith("@"))return parts[0];
+  if(parts[0]==="channel"&&parts[1])return parts[1];
+  return null;
+ }catch{return null}
+}
+async function invokeSync(){
+ const secret=prompt("Masukkan REPLAY_SYNC_SECRET yang sama dengan secret di Edge Function:");
+ if(!secret)return;
+ const {data:{session:current}}=await db.auth.getSession();
+ const response=await fetch(SYNC_FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+(current?.access_token||SUPABASE_ANON_KEY),"apikey":SUPABASE_ANON_KEY,"x-sync-secret":secret},body:"{}"});
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(result.error||"HTTP "+response.status);
+ return result;
+}
+async function init(){
+ if(!validConfig()){
+  $("errorState").textContent="Konfigurasi belum diisi. Buka file index.html lalu isi SUPABASE_URL dan SUPABASE_ANON_KEY.";
+  $("errorState").classList.remove("hidden");$("resultCount").textContent="Menunggu konfigurasi Supabase";return;
+ }
+ db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const {data}=await db.auth.getSession();session=data.session;
+ await loadProfile();await loadReplays();
+ db.auth.onAuthStateChange(async(_event,newSession)=>{
+  session=newSession;
+  await loadProfile();
+  if(selectedReplay){$("loginCommentHint").classList.toggle("hidden",!!session);$("commentForm").classList.toggle("hidden",!session);await loadLikes()}
+  if(isOwner()&&!$("ownerPanel").classList.contains("hidden"))loadOwnerChannels();
+ });
+ db.channel("replay-public-updates")
+  .on("postgres_changes",{event:"*",schema:"public",table:"jkt48_replays"},()=>loadReplays())
+  .on("postgres_changes",{event:"*",schema:"public",table:"replay_comments"},()=>{if(selectedReplay)loadComments()})
+  .on("postgres_changes",{event:"*",schema:"public",table:"replay_likes"},()=>{if(selectedReplay)loadLikes()})
+  .subscribe();
+}
+$("openAuth").onclick=()=>$("authPanel").classList.toggle("hidden");
+$("logoutButton").onclick=async()=>{await db.auth.signOut();$("playerSection").classList.add("hidden");$("youtubePlayer").src="about:blank"};
+$("ownerToggle").onclick=async()=>{$("ownerPanel").classList.toggle("hidden");if(!$("ownerPanel").classList.contains("hidden"))loadOwnerChannels()};
+$("loginForm").onsubmit=async e=>{
+ e.preventDefault();clearMessage("authMessage");
+ const {error}=await db.auth.signInWithPassword({email:$("loginEmail").value,password:$("loginPassword").value});
+ if(error)setMessage("authMessage",error.message);else{$("authPanel").classList.add("hidden");$("loginForm").reset()}
+};
+$("registerForm").onsubmit=async e=>{
+ e.preventDefault();clearMessage("authMessage");
+ const {data,error}=await db.auth.signUp({email:$("registerEmail").value,password:$("registerPassword").value,options:{data:{display_name:$("registerName").value.trim()}}});
+ if(error)setMessage("authMessage",error.message);
+ else{setMessage("authMessage",data.session?"Pendaftaran berhasil. Kamu sudah login.":"Pendaftaran berhasil. Periksa email untuk konfirmasi, lalu login.");$("registerForm").reset()}
+};
+$("channelForm").onsubmit=async e=>{
+ e.preventDefault();if(!isOwner())return;
+ const input=extractChannelInput($("channelInput").value);
+ if(!input){setMessage("ownerMessage","Masukkan URL channel YouTube, @handle, atau ID channel UC... yang valid.");return}
+ const {error}=await db.from("replay_channels").insert({channel_input:input,channel_label:$("channelLabel").value.trim()||null,created_by:session.user.id,is_active:true});
+ if(error)setMessage("ownerMessage","Gagal menambahkan channel: "+error.message);
+ else{setMessage("ownerMessage","Channel ditambahkan. Sinkronisasi akan mengambil video pada jadwal berikutnya.");$("channelForm").reset();await loadOwnerChannels()}
+};
+$("syncNow").onclick=async()=>{
+ try{setMessage("ownerMessage","Meminta sinkronisasi...");const result=await invokeSync();setMessage("ownerMessage","Sinkronisasi selesai: "+JSON.stringify(result));await loadReplays();await loadOwnerChannels()}
+ catch(err){setMessage("ownerMessage","Sinkronisasi gagal: "+err.message)}
+};
+$("searchInput").addEventListener("input",renderReplays);
+$("generationFilter").addEventListener("change",renderReplays);
+$("refreshButton").onclick=loadReplays;
+$("closePlayer").onclick=()=>{$("youtubePlayer").src="about:blank";$("playerSection").classList.add("hidden");selectedReplay=null};
+$("watchWebsite").onclick=()=>{$("websitePlayer").classList.remove("hidden");$("youtubePlayer").src=selectedReplay?"https://www.youtube-nocookie.com/embed/"+encodeURIComponent(selectedReplay.youtube_video_id):"about:blank"};
+$("watchYoutube").onclick=()=>{};
+$("likeButton").onclick=async()=>{
+ if(!session){setMessage("authMessage","Login terlebih dahulu untuk memberikan like.");$("authPanel").classList.remove("hidden");return}
+ if(!selectedReplay)return;
+ const {data:existing,error:readError}=await db.from("replay_likes").select("id").eq("replay_id",selectedReplay.id).eq("user_id",session.user.id).maybeSingle();
+ if(readError){alert(readError.message);return}
+ const result=existing
+  ?await db.from("replay_likes").delete().eq("id",existing.id)
+  :await db.from("replay_likes").insert({replay_id:selectedReplay.id,user_id:session.user.id});
+ if(result.error)alert(result.error.message);else await loadLikes();
+};
+$("commentForm").onsubmit=async e=>{
+ e.preventDefault();
+ if(!session){$("authPanel").classList.remove("hidden");return}
+ if(!selectedReplay)return;
+ const body=$("commentText").value.trim();if(!body)return;
+ const {error}=await db.from("replay_comments").insert({replay_id:selectedReplay.id,user_id:session.user.id,body});
+ if(error)alert("Komentar gagal dikirim: "+error.message);
+ else{$("commentText").value="";await loadComments()}
+};
+init();
+</script>
+</body>
+</html>
